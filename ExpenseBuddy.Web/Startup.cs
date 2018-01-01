@@ -11,6 +11,8 @@ using Microsoft.Extensions.DependencyInjection;
 using ExpenseBuddy.Web.Data;
 using ExpenseBuddy.Web.Models;
 using ExpenseBuddy.Web.Services;
+using ExpenseBuddy.Data;
+using ExpenseBuddy.Data.Models;
 
 namespace ExpenseBuddy.Web
 {
@@ -26,11 +28,11 @@ namespace ExpenseBuddy.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddDbContext<ExpenseBuddyDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
             services.AddIdentity<ApplicationUser, IdentityRole>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddEntityFrameworkStores<ExpenseBuddyDbContext>()
                 .AddDefaultTokenProviders();
 
             // Add application services.

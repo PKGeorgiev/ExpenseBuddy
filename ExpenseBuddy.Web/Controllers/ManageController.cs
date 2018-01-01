@@ -13,6 +13,7 @@ using Microsoft.Extensions.Options;
 using ExpenseBuddy.Web.Models;
 using ExpenseBuddy.Web.Models.ManageViewModels;
 using ExpenseBuddy.Web.Services;
+using ExpenseBuddy.Data.Models;
 
 namespace ExpenseBuddy.Web.Controllers
 {

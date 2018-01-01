@@ -4,13 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using ExpenseBuddy.Web.Models;
+using ExpenseBuddy.Data.Models;
 
-namespace ExpenseBuddy.Web.Data
+namespace ExpenseBuddy.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ExpenseBuddyDbContext : IdentityDbContext<ApplicationUser>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public ExpenseBuddyDbContext(DbContextOptions<ExpenseBuddyDbContext> options)
             : base(options)
         {
         }
