@@ -13,6 +13,8 @@ using ExpenseBuddy.Web.Models;
 using ExpenseBuddy.Web.Services;
 using ExpenseBuddy.Data;
 using ExpenseBuddy.Data.Models;
+using AutoMapper;
+using LearningSystem.Web.Infrastructure.Extensions;
 
 namespace ExpenseBuddy.Web
 {
@@ -35,6 +37,10 @@ namespace ExpenseBuddy.Web
                 .AddEntityFrameworkStores<ExpenseBuddyDbContext>()
                 .AddDefaultTokenProviders();
 
+            services.AddAutoMapper();
+
+            services.AddDomainServices();
+
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
 
@@ -44,11 +50,16 @@ namespace ExpenseBuddy.Web
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
+            app.UseDatabaseMigration();
+
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
                 app.UseBrowserLink();
                 app.UseDatabaseErrorPage();
+
+
+                var s = Configuration["Defaults:Accounts:admin"];
             }
             else
             {
