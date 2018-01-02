@@ -16,6 +16,7 @@ using ExpenseBuddy.Data.Models;
 using AutoMapper;
 using LearningSystem.Web.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Mvc;
+using ExpenseBuddy.Web.Infrastructure.Filters;
 
 namespace ExpenseBuddy.Web
 {
@@ -54,6 +55,7 @@ namespace ExpenseBuddy.Web
             services.AddMvc(options =>
             {
                 options.Filters.Add<AutoValidateAntiforgeryTokenAttribute>();
+                options.Filters.Add<AutoLoginDuringDevelopmentAttribute>();
             });
         }
 
@@ -61,6 +63,8 @@ namespace ExpenseBuddy.Web
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
         {
             app.UseDatabaseMigration();
+
+            //app.UseAutoLoginDuringDevelopment("administrator");
 
             if (env.IsDevelopment())
             {

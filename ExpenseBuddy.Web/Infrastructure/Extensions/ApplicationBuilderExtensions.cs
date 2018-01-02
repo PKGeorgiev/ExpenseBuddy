@@ -5,6 +5,7 @@
     using ExpenseBuddy.Data.Models;
     using ExpenseBuddy.Web;
     using Microsoft.AspNetCore.Builder;
+    using Microsoft.AspNetCore.Hosting;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
     using Microsoft.Extensions.Configuration;
@@ -14,7 +15,40 @@
 
     public static class ApplicationBuilderExtensions
     {
-        public static IApplicationBuilder UseDatabaseMigration(this IApplicationBuilder app)
+        public static IApplicationBuilder UseAutoLoginDuringDevelopment(this IApplicationBuilder app, string username)
+        {
+            using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
+            {
+                var env = serviceScope.ServiceProvider.GetService<IHostingEnvironment>();
+
+                if (env.IsDevelopment()) {
+
+                    Task
+                    .Run(async () =>
+                    {
+
+                        var userManager = serviceScope.ServiceProvider.GetService<UserManager<ApplicationUser>>();
+                        var signInManager = serviceScope.ServiceProvider.GetService<SignInManager<ApplicationUser>>();
+
+                        var user = await userManager.FindByNameAsync(username);
+
+                        if (user == null) {
+                            throw new Exception($"The user {username} was not found!");
+                        }
+
+                        await signInManager.SignInAsync(user, true);
+
+                    }).Wait();
+
+                }
+
+                return app;
+            }
+
+        }
+
+
+                public static IApplicationBuilder UseDatabaseMigration(this IApplicationBuilder app)
         {
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
@@ -23,7 +57,7 @@
                 var userManager = serviceScope.ServiceProvider.GetService<UserManager<ApplicationUser>>();
                 var roleManager = serviceScope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
                 var config = serviceScope.ServiceProvider.GetService<IConfiguration>();
-
+                
                 Task
                     .Run(async () =>
                     {
