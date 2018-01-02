@@ -11,10 +11,12 @@ using Microsoft.Extensions.Configuration;
 
 namespace ExpenseBuddy.Web.Infrastructure.Filters
 {
-    public class AutoLoginDuringDevelopmentAttribute : Attribute, IAsyncAuthorizationFilter
+    public class AutoLoginDuringDevelopmentAttribute : ActionFilterAttribute
     {
-        public Task OnAuthorizationAsync(AuthorizationFilterContext context)
+        // Works together with AccountController.CompleteLogout()
+        public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
+
             if (!context.HttpContext.User.Identity.IsAuthenticated)
             {
                 var env = context.HttpContext.RequestServices.GetService<IHostingEnvironment>();
@@ -26,18 +28,22 @@ namespace ExpenseBuddy.Web.Infrastructure.Filters
 
                     var username = config["AutoLoginDuringDevelopment"];
 
-                    var user = userManager.FindByNameAsync(username).Result;
-
-                    if (user == null)
+                    if (!string.IsNullOrWhiteSpace(username))
                     {
-                        throw new Exception($"The user for autologin {username} was not found!");
-                    }
+                        var user = await userManager.FindByNameAsync(username);
 
-                    return signInManager.SignInAsync(user, true);
+                        if (user == null)
+                        {
+                            throw new Exception($"The user for autologin {username} was not found!");
+                        }
+
+                        await signInManager.SignInAsync(user, true);
+                    }
                 }
             }
 
-            return Task.FromResult(0);
-        }
+            await next();
+        } 
+
     }
 }

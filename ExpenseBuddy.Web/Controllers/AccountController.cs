@@ -248,6 +248,10 @@ namespace ExpenseBuddy.Web.Controllers
         {
             await _signInManager.SignOutAsync();
             _logger.LogInformation("User logged out.");
+            return RedirectToAction(nameof(AccountController.CompleteLogout));
+        }
+
+        public IActionResult CompleteLogout() {
             return RedirectToAction(nameof(HomeController.Index), "Home");
         }
 
