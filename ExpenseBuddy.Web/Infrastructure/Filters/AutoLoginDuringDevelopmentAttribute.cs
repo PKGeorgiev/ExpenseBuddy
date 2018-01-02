@@ -11,33 +11,44 @@ using Microsoft.Extensions.Configuration;
 
 namespace ExpenseBuddy.Web.Infrastructure.Filters
 {
+    // Works together with AccountController.CompleteLogout()
     public class AutoLoginDuringDevelopmentAttribute : ActionFilterAttribute
     {
-        // Works together with AccountController.CompleteLogout()
+        private readonly UserManager<ApplicationUser> _userManager;        
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IHostingEnvironment _env;
+        private readonly IConfiguration _conf;
+
+        public AutoLoginDuringDevelopmentAttribute(
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            IHostingEnvironment env,
+            IConfiguration conf)
+        {
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _env = env;
+            _conf = conf;
+        }
+        
         public override async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-
             if (!context.HttpContext.User.Identity.IsAuthenticated)
             {
-                var env = context.HttpContext.RequestServices.GetService<IHostingEnvironment>();
-                if (env.IsDevelopment())
+                if (_env.IsDevelopment())
                 {
-                    var userManager = context.HttpContext.RequestServices.GetService<UserManager<ApplicationUser>>();
-                    var signInManager = context.HttpContext.RequestServices.GetService<SignInManager<ApplicationUser>>();
-                    var config = context.HttpContext.RequestServices.GetService<IConfiguration>();
-
-                    var username = config["AutoLoginDuringDevelopment"];
+                    var username = _conf["AutoLoginDuringDevelopment"];
 
                     if (!string.IsNullOrWhiteSpace(username))
                     {
-                        var user = await userManager.FindByNameAsync(username);
+                        var user = await _userManager.FindByNameAsync(username);
 
                         if (user == null)
                         {
                             throw new Exception($"The user for autologin {username} was not found!");
                         }
 
-                        await signInManager.SignInAsync(user, true);
+                        await _signInManager.SignInAsync(user, true);
                     }
                 }
             }
