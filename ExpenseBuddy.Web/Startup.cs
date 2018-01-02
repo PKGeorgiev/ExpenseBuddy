@@ -15,6 +15,7 @@ using ExpenseBuddy.Data;
 using ExpenseBuddy.Data.Models;
 using AutoMapper;
 using LearningSystem.Web.Infrastructure.Extensions;
+using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseBuddy.Web
 {
@@ -33,7 +34,13 @@ namespace ExpenseBuddy.Web
             services.AddDbContext<ExpenseBuddyDbContext>(options =>
                 options.UseSqlServer(Configuration.GetConnectionString("DefaultConnection")));
 
-            services.AddIdentity<ApplicationUser, IdentityRole>()
+            services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+                {
+                    options.Password.RequireDigit = false;
+                    options.Password.RequireLowercase = false;
+                    options.Password.RequireUppercase = false;
+                    options.Password.RequireNonAlphanumeric = false;
+                })
                 .AddEntityFrameworkStores<ExpenseBuddyDbContext>()
                 .AddDefaultTokenProviders();
 
@@ -44,7 +51,10 @@ namespace ExpenseBuddy.Web
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
 
-            services.AddMvc();
+            services.AddMvc(options =>
+            {
+                options.Filters.Add<AutoValidateAntiforgeryTokenAttribute>();
+            });
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,10 +1,13 @@
 ﻿namespace LearningSystem.Web.Infrastructure.Extensions
 {
+    //using AutoMapper.Configuration;
     using ExpenseBuddy.Data;
     using ExpenseBuddy.Data.Models;
+    using ExpenseBuddy.Web;
     using Microsoft.AspNetCore.Builder;
     using Microsoft.AspNetCore.Identity;
     using Microsoft.EntityFrameworkCore;
+    using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using System;
     using System.Threading.Tasks;
@@ -19,17 +22,16 @@
 
                 var userManager = serviceScope.ServiceProvider.GetService<UserManager<ApplicationUser>>();
                 var roleManager = serviceScope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
+                var config = serviceScope.ServiceProvider.GetService<IConfiguration>();
 
                 Task
                     .Run(async () =>
                     {
-                        /*var adminName = WebConstants.AdministratorRole;
+                        var adminName = WebConstants.AdministratorRole;
 
                         var roles = new[]
                         {
-                            adminName,
-                            WebConstants.BlogAuthorRole,
-                            WebConstants.TrainerRole
+                            WebConstants.AdministratorRole
                         };
 
                         foreach (var role in roles)
@@ -45,24 +47,24 @@
                             }
                         }
 
-                        var adminEmail = "admin@mysite.com";
+                        var adminEmail = config["init:accounts:administrator:mail"];
 
                         var adminUser = await userManager.FindByEmailAsync(adminEmail);
 
                         if (adminUser == null)
                         {
-                            adminUser = new User
+                            adminUser = new ApplicationUser
                             {
                                 Email = adminEmail,
-                                UserName = adminName,
-                                Name = adminName,
-                                Birthdate = DateTime.UtcNow
+                                UserName = adminName
                             };
 
-                            await userManager.CreateAsync(adminUser, "admin12");
+                            var adminPwd = config["secrets:accounts:administrator"];
+
+                            await userManager.CreateAsync(adminUser, adminPwd);
 
                             await userManager.AddToRoleAsync(adminUser, adminName);
-                        } */
+                        } 
                     })
                     .Wait();
             }

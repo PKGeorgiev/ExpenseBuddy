@@ -13,10 +13,10 @@
                 .CurrentDomain
                 .GetAssemblies()
                 .Where(a => a.GetName().Name.Contains("ExpenseBuddy"))
-                .SelectMany(a => a.GetTypes());
+                .SelectMany(a => a.GetTypes().Where(t => t.IsClass && !t.IsAbstract));
 
             allTypes
-                .Where(t => t.IsClass && !t.IsAbstract && t
+                .Where(t => t
                     .GetInterfaces()
                     .Where(i => i.IsGenericType)
                     .Select(i => i.GetGenericTypeDefinition())
@@ -40,9 +40,7 @@
                 .ForEach(mapping => this.CreateMap(mapping.Source, mapping.Destination));
 
             allTypes
-                .Where(t => t.IsClass
-                    && !t.IsAbstract
-                    && typeof(IHaveCustomMapping).IsAssignableFrom(t))
+                .Where(t => typeof(IHaveCustomMapping).IsAssignableFrom(t))
                 .Select(Activator.CreateInstance)
                 .Cast<IHaveCustomMapping>()
                 .ToList()
