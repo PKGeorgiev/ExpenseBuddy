@@ -65,7 +65,7 @@ namespace ExpenseBuddy.Web
 
             applicationLifetime.ApplicationStopped.Register(() => AutoMapper.Mapper.Reset());
 
-            //app.UseDatabaseMigration();
+            app.UseDatabaseMigration();
 
             if (env.IsDevelopment())
             {

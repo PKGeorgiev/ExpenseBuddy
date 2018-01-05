@@ -17,5 +17,7 @@ namespace ExpenseBuddy.Services.Admin.Models
         public bool IsEnabled { get; set; }
 
         public IEnumerable<string> Roles { get; set; } = new List<string>();
+
+        public IEnumerable<string> AvailableRoles { get; set; } = new List<string>();
     }
 }

@@ -48,7 +48,7 @@
         }
 
 
-                public static IApplicationBuilder UseDatabaseMigration(this IApplicationBuilder app)
+        public static IApplicationBuilder UseDatabaseMigration(this IApplicationBuilder app)
         {
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
@@ -65,7 +65,8 @@
 
                         var roles = new[]
                         {
-                            WebConstants.AdministratorRole
+                            WebConstants.AdministratorRole,
+                            WebConstants.EditorRole
                         };
 
                         foreach (var role in roles)
