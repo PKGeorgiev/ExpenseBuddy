@@ -1,4 +1,4 @@
-﻿namespace LearningSystem.Common.Mapping
+﻿namespace ExpenseBuddy.Common.Mapping
 {
     using AutoMapper;
 

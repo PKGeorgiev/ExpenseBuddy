@@ -60,11 +60,12 @@ namespace ExpenseBuddy.Web
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IHostingEnvironment env)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime applicationLifetime)
         {
-            app.UseDatabaseMigration();
 
-            //app.UseAutoLoginDuringDevelopment("administrator");
+            applicationLifetime.ApplicationStopped.Register(() => AutoMapper.Mapper.Reset());
+
+            //app.UseDatabaseMigration();
 
             if (env.IsDevelopment())
             {
@@ -86,6 +87,11 @@ namespace ExpenseBuddy.Web
 
             app.UseMvc(routes =>
             {
+                routes.MapRoute(
+                  name: "areas",
+                  template: "{area:exists}/{controller=Home}/{action=Index}/{id?}"
+                );
+
                 routes.MapRoute(
                     name: "default",
                     template: "{controller=Home}/{action=Index}/{id?}");

@@ -26,4 +26,8 @@
     <ProjectReference Include="..\ExpenseBuddy.Services\ExpenseBuddy.Services.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Areas\Admin\Data\" />
+  </ItemGroup>
+
 </Project>

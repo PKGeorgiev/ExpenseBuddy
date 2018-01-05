@@ -11,9 +11,10 @@ using System;
 namespace ExpenseBuddy.Web.Data.Migrations
 {
     [DbContext(typeof(ExpenseBuddyDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180103125359_IsEnabled")]
+    partial class IsEnabled
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

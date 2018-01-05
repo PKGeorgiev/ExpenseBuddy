@@ -4,4 +4,9 @@
     <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\ExpenseBuddy.Common\ExpenseBuddy.Common.csproj" />
+    <ProjectReference Include="..\ExpenseBuddy.Data\ExpenseBuddy.Data.csproj" />
+  </ItemGroup>
+
 </Project>

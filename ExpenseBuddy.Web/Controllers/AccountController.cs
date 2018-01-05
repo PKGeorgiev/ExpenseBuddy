@@ -23,6 +23,7 @@ namespace ExpenseBuddy.Web.Controllers
     {
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IEmailSender _emailSender;
         private readonly ILogger _logger;
 
@@ -35,7 +36,7 @@ namespace ExpenseBuddy.Web.Controllers
             _userManager = userManager;
             _signInManager = signInManager;
             _emailSender = emailSender;
-            _logger = logger;
+            _logger = logger;            
         }
 
         [TempData]
@@ -343,6 +344,7 @@ namespace ExpenseBuddy.Web.Controllers
                 return RedirectToAction(nameof(HomeController.Index), "Home");
             }
             var user = await _userManager.FindByIdAsync(userId);
+            
             if (user == null)
             {
                 throw new ApplicationException($"Unable to load user with ID '{userId}'.");

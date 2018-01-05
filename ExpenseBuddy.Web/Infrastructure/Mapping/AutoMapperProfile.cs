@@ -1,7 +1,7 @@
 ﻿namespace LearningSystem.Web.Infrastructure.Mapping
 {
     using AutoMapper;
-    using Common.Mapping;
+    using ExpenseBuddy.Common.Mapping;
     using System;
     using System.Linq;
 
