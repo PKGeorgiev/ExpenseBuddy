@@ -12,5 +12,9 @@ namespace ExpenseBuddy.Data.Models
         public bool IsEnabled { get; set; }
 
         public IEnumerable<BankAccount> BankAccounts { get; set; }
+
+        public IEnumerable<Expense> OwnedExpenses { get; set; }
+
+        public IEnumerable<ExpensePayer> Expenses { get; set; }
     }
 }

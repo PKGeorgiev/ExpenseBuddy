@@ -13,6 +13,8 @@ namespace ExpenseBuddy.Data
 
         public DbSet<Bank> Banks { get; set; }
         public DbSet<BankAccount> BankAccounts { get; set; }
+        public DbSet<Expense> Expenses { get; set; }
+        public DbSet<ExpenseElement> ExpenseElements { get; set; }
 
         public ExpenseBuddyDbContext(DbContextOptions<ExpenseBuddyDbContext> options)
             : base(options)
@@ -43,6 +45,41 @@ namespace ExpenseBuddy.Data
             builder.Entity<BankAccount>()
                 .Property(t => t.IsActive)
                 .HasDefaultValue(true);
+
+
+            builder
+                .Entity<Expense>()
+                .HasOne(m => m.Element)
+                .WithMany(m => m.Expenses)
+                .HasForeignKey(m => m.ElementId);
+
+            builder
+                .Entity<Expense>()
+                .HasOne(m => m.Owner)
+                .WithMany(m => m.OwnedExpenses)
+                .HasForeignKey(m => m.OwnerId);
+
+            // Define PK
+            builder
+                .Entity<ExpensePayer>()
+                .HasKey(m => new { m.ExpenseId, m.PayerId });
+
+
+            // Define Many-To-Many Expense <=> ApplicationUser
+            builder
+                .Entity<Expense>()
+                .HasMany(m => m.Payers)
+                .WithOne(m => m.Expense)
+                .HasForeignKey(m => m.ExpenseId);
+
+            builder
+                .Entity<ApplicationUser>()
+                .HasMany(m => m.Expenses)
+                .WithOne(m => m.Payer)
+                .HasForeignKey(m => m.PayerId);
+            
+            
+
 
         }
     }

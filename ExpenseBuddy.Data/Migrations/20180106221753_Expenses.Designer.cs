@@ -12,9 +12,10 @@ using System;
 namespace ExpenseBuddy.Web.Data.Migrations
 {
     [DbContext(typeof(ExpenseBuddyDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180106221753_Expenses")]
+    partial class Expenses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -150,10 +151,10 @@ namespace ExpenseBuddy.Web.Data.Migrations
 
                     b.HasIndex("OwnerId");
 
-                    b.ToTable("Expenses");
+                    b.ToTable("Expense");
                 });
 
-            modelBuilder.Entity("ExpenseBuddy.Data.Models.ExpenseElement", b =>
+            modelBuilder.Entity("ExpenseBuddy.Data.Models.ExpenseElements", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
@@ -301,7 +302,7 @@ namespace ExpenseBuddy.Web.Data.Migrations
 
             modelBuilder.Entity("ExpenseBuddy.Data.Models.Expense", b =>
                 {
-                    b.HasOne("ExpenseBuddy.Data.Models.ExpenseElement", "Element")
+                    b.HasOne("ExpenseBuddy.Data.Models.ExpenseElements", "Element")
                         .WithMany("Expenses")
                         .HasForeignKey("ElementId")
                         .OnDelete(DeleteBehavior.Cascade);
