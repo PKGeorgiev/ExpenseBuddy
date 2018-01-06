@@ -17,6 +17,10 @@ using AutoMapper;
 using LearningSystem.Web.Infrastructure.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using ExpenseBuddy.Web.Infrastructure.Filters;
+using ExpenseBuddy.Services;
+using ExpenseBuddy.Services.Implementations;
+using ExpenseBuddy.Services.Admin;
+using Microsoft.EntityFrameworkCore.Internal;
 
 namespace ExpenseBuddy.Web
 {
@@ -47,10 +51,15 @@ namespace ExpenseBuddy.Web
 
             services.AddAutoMapper();
 
-            services.AddDomainServices();
+            //
 
             // Add application services.
             services.AddTransient<IEmailSender, EmailSender>();
+
+//            services.AddTransient<IGenericRepository<ExpenseBuddyDbContext,ApplicationUser,string>, GenericRepository<ExpenseBuddyDbContext, ApplicationUser, string>>();
+//            services.AddTransient<IBankRepositoryService, BankRepositoryService>();
+
+            services.AddDomainServices();
 
             services.AddMvc(options =>
             {

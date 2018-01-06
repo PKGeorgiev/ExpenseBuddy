@@ -11,6 +11,7 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using System;
+    using System.Linq;
     using System.Threading.Tasks;
 
     public static class ApplicationBuilderExtensions
@@ -52,7 +53,9 @@
         {
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
-                serviceScope.ServiceProvider.GetService<ExpenseBuddyDbContext>().Database.Migrate();
+                var ctx = serviceScope.ServiceProvider.GetService<ExpenseBuddyDbContext>();
+                
+                ctx.Database.Migrate();
 
                 var userManager = serviceScope.ServiceProvider.GetService<UserManager<ApplicationUser>>();
                 var roleManager = serviceScope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
@@ -99,7 +102,68 @@
                             await userManager.CreateAsync(adminUser, adminPwd);
 
                             await userManager.AddToRoleAsync(adminUser, adminName);
+                        }
+
+                        Bank ibank = ctx.Banks.FirstOrDefault(b => b.Name == "Internal Bank");
+
+                        if (ibank == null) {
+
+                            ibank = new Bank()
+                            {
+                                Name = "Internal Bank"
+                            };
+
+                            ctx.Banks.Add(ibank);
+                            await ctx.SaveChangesAsync();
                         } 
+
+                        if (!ctx.Banks.Any(b => b.Name == "FI Bank"))
+                        {
+                            var bank = new Bank()
+                            {
+                                Name = "FI Bank"
+                            };
+
+                            ctx.Banks.Add(bank);
+                            await ctx.SaveChangesAsync();
+                        }
+
+                        if (!ctx.Banks.Any(b => b.Name == "DSK Bank"))
+                        {
+                            var bank = new Bank()
+                            {
+                                Name = "DSK Bank"
+                            };
+
+                            ctx.Banks.Add(bank);
+                            await ctx.SaveChangesAsync();
+                        }
+
+
+                        var users = userManager
+                            .Users
+                            .Include(ba => ba.BankAccounts)
+                            .ToList();
+
+                        foreach (var user in users) {
+
+                            if (!user.BankAccounts.Any()) {
+                                var ba = new BankAccount() {
+                                    Amount = 0,
+                                    Bank = ibank,
+                                    User = user,
+                                    IsActive = true,
+                                    Number = "500",
+                                    Notes = "Cash"
+                                };
+
+                                ctx.BankAccounts.Add(ba);
+                                await ctx.SaveChangesAsync();
+                            }
+
+                        }
+
+
                     })
                     .Wait();
             }

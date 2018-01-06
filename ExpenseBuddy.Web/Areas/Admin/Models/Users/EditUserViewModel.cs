@@ -1,4 +1,5 @@
-﻿using ExpenseBuddy.Common.Mapping;
+﻿using AutoMapper;
+using ExpenseBuddy.Common.Mapping;
 using ExpenseBuddy.Services.Admin.Models;
 using System;
 using System.Collections.Generic;
@@ -24,5 +25,6 @@ namespace ExpenseBuddy.Web.Areas.Admin.Models.Users
         public string Password { get; set; }
 
         public string ConfirmPassword { get; set; }
+
     }
 }

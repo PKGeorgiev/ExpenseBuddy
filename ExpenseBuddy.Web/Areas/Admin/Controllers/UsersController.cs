@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using ExpenseBuddy.Data;
+using ExpenseBuddy.Data.Models;
+using ExpenseBuddy.Services;
 using ExpenseBuddy.Services.Admin;
 using ExpenseBuddy.Services.Admin.Models;
 using ExpenseBuddy.Web.Areas.Admin.Models.Users;
@@ -18,11 +21,15 @@ namespace ExpenseBuddy.Web.Areas.Admin.Controllers
 
         private readonly IAdminUserService _users;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ExpenseBuddyDbContext _ctx;
 
-        public UsersController(IAdminUserService users, RoleManager<IdentityRole> roleManager)
+        public UsersController(IAdminUserService users, 
+            RoleManager<IdentityRole> roleManager,
+            ExpenseBuddyDbContext ctx)
         {
             _users = users;
             _roleManager = roleManager;
+            _ctx = ctx;
         }
 
         public async Task<IActionResult> Index()
@@ -100,7 +107,7 @@ namespace ExpenseBuddy.Web.Areas.Admin.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Create(string userId)
+        public IActionResult Create(string userId)
         {
 
             var user = new EditUserViewModel();
