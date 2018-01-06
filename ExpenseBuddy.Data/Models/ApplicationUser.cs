@@ -10,5 +10,7 @@ namespace ExpenseBuddy.Data.Models
     public class ApplicationUser : IdentityUser
     {
         public bool IsEnabled { get; set; }
+
+        public IEnumerable<BankAccount> BankAccounts { get; set; }
     }
 }

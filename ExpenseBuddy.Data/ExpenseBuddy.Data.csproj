@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Compile Remove="Migrations\20180105140147_UserRoles.cs" />
+    <Compile Remove="Migrations\20180106100901_BankStuff.cs" />
   </ItemGroup>
 
   <ItemGroup>
