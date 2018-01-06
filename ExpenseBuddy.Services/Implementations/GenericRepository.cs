@@ -102,8 +102,9 @@ namespace ExpenseBuddy.Services.Implementations
 
         public void Update(EntityType entity)
         {
-            _ctx.Set<EntityType>().Attach(entity);
-            _ctx.Entry(entity).State = EntityState.Modified;
+            //_ctx.Set<EntityType>().Attach(entity);
+            //_ctx.Entry(entity).State = EntityState.Modified;
+            _ctx.Set<EntityType>().Update(entity);
         }
 
         public void Delete(EntityType entity)
