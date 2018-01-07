@@ -85,6 +85,11 @@
     </dl>
 </div>
 <div>
+    @{ 
+        var ctrl = string.IsNullOrEmpty((string)Context.Request.Query["return"]) ? "Expenses" : ((string)Context.Request.Query["return"]);
+
+    }
+
     <a asp-action="Edit" asp-route-id="@Model.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" asp-controller="@ctrl" >Back to list</a>
 </div>

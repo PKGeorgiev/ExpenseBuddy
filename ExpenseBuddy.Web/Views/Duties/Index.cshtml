@@ -1,0 +1,51 @@
+﻿@model IEnumerable<ExpenseBuddy.Data.Models.ExpensePayer>
+
+@{
+    ViewData["Title"] = "Duties";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<table class="table table-hover">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Amount)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Status)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Expense)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Payer)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Amount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    <a style="font-family: Consolas" asp-area="" asp-controller="Expenses" asp-action="Details" asp-route-id="@item.ExpenseId" asp-route-return="Duties">
+                        @string.Format("{0:yyyy-MM-dd} / {1:F3} / {2} / {3}", item.Expense.ExpenseDate, item.Expense.Amount, item.Expense.Shop, item.Expense.Element.Name)
+                    </a>
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Payer.UserName)
+                </td>
+                <td>                   
+                    @Html.ActionLink("Pay", "Pay", new { /* id=item.PrimaryKey */ }, new { @class = "btn btn-primary btn-xs" })
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

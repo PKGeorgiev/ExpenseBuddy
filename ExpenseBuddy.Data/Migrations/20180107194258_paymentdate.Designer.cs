@@ -12,9 +12,10 @@ using System;
 namespace ExpenseBuddy.Web.Data.Migrations
 {
     [DbContext(typeof(ExpenseBuddyDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180107194258_paymentdate")]
+    partial class paymentdate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
