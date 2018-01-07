@@ -5,7 +5,9 @@ using System.Threading.Tasks;
 using AutoMapper;
 using ExpenseBuddy.Data.Models;
 using ExpenseBuddy.Services;
+using ExpenseBuddy.Services.BankAccounts;
 using ExpenseBuddy.Web.Models.BankAccountsViewModels;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
@@ -16,22 +18,38 @@ namespace ExpenseBuddy.Web.Controllers
         private readonly IBankAccountRepositoryService _bankAccounts;
         private readonly IBankRepositoryService _banks;
         private readonly IApplicationUserRepositoryService _users;
+        private readonly IUserBankAccountService _bankAccountsService;
+        private readonly UserManager<ApplicationUser> _um;
 
         public BankAccountsController(
             IBankAccountRepositoryService bankAccounts,
             IBankRepositoryService banks,
-            IApplicationUserRepositoryService users)
+            IApplicationUserRepositoryService users,
+            IUserBankAccountService bankAccountsService,
+            UserManager<ApplicationUser> um)
         {
             _bankAccounts = bankAccounts;
             _banks = banks;
             _users = users;
+            _bankAccountsService = bankAccountsService;
+            _um = um;
         }
 
         public async Task<IActionResult> Index()
         {
-            var ba = await _bankAccounts.AllAsync(include: b => b.Bank, predicate: b => b.User.UserName == User.Identity.Name);
+            var user = await _um.FindByNameAsync(User.Identity.Name);
 
-            return View(ba);
+            if (await _um.IsInRoleAsync(user, "Administrator")) {
+                var ba = await _bankAccountsService.All();
+                return View(ba);
+            } else
+            {
+                var ba = await _bankAccountsService.AllForUser(user.Id);
+                return View(ba);
+            }
+
+
+
         }
 
         public async Task<IActionResult> Create()

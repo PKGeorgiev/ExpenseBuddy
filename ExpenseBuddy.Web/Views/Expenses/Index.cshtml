@@ -42,36 +42,43 @@
     <tbody>
         @foreach (var item in Model)
         {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.ExpenseDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Type)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Amount)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Fee)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Status)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Shop)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Element.Name)
-            </td>
-            <td>
-                @Html.Partial("_ExpensePayersPartial", item.Payers)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-default">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-default">Details</a>
-            </td>
-        </tr>
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ExpenseDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Type)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Amount)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Fee)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Status)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Shop)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Element.Name)
+                </td>
+                <td>
+                    @Html.Partial("_ExpensePayersPartial", item.Payers)
+                </td>
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-default">Details</a>
+                    @if (item.Payers.Any(p => p.Status == PaymentStatus.Payed)) { }
+                    else
+                    {
+                        <span>|</span>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-default">Edit</a>
+                    }
+
+
+                </td>
+            </tr>
         }
     </tbody>
 </table>

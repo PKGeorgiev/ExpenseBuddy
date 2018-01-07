@@ -1,0 +1,26 @@
+﻿@model ExpenseBuddy.Data.Models.ExpensePayer
+
+@{
+    ViewData["Title"] = "Pay duty";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+@Html.Partial("_ExpensePartial", Model.Expense)
+
+<div>
+    <hr />
+    <h2>Amount: @Model.Amount BGN</h2>
+    <br />
+</div>
+<div>
+    <form asp-action="Pay">
+        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+        <div class="form-group">
+            <input type="hidden" asp-for="ExpenseId" />
+            <input type="hidden" asp-for="PayerId" />
+            <input type="submit" value="Pay" class="btn btn-primary" />
+        </div>
+    </form>
+    <a asp-action="Index">Back to List</a>
+</div>

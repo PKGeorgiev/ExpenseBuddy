@@ -7,8 +7,8 @@ namespace ExpenseBuddy.Data.Models
     public enum ExpenseStatus
     {
         AwaitingPayment = 0,
-        PayedPartially = 0,
-        Payed = 1,
-        Cancelled = 2
+        PayedPartially = 1,
+        Payed = 2,
+        Cancelled = 3
     }
 }

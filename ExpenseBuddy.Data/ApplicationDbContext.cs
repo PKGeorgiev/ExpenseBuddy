@@ -80,6 +80,11 @@ namespace ExpenseBuddy.Data
                 .Property(p => p.Fee)
                 .HasColumnType("decimal(18, 3)");
 
+            builder
+                .Entity<BankAccount>()
+                .Property(p => p.Amount)
+                .HasColumnType("decimal(18, 3)");
+
 
             // Define Many-To-Many Expense <=> ApplicationUser
             builder

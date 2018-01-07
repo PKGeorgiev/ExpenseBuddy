@@ -21,7 +21,9 @@
             <th>
                 @Html.DisplayNameFor(model => model.Payer)
             </th>
-            <th></th>
+            <th>
+                Payment
+            </th>
         </tr>
     </thead>
     <tbody>
@@ -42,8 +44,15 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Payer.UserName)
                 </td>
-                <td>                   
-                    @Html.ActionLink("Pay", "Pay", new { /* id=item.PrimaryKey */ }, new { @class = "btn btn-primary btn-xs" })
+                <td>        
+                    @if (item.Status == PaymentStatus.Unpayed)
+                    {
+                    @Html.ActionLink("Pay", "Pay", new { expenseId = item.ExpenseId, payerId = item.PayerId }, new { @class = "btn btn-primary btn-xs" })
+                    }
+                    else
+                    {
+                        @item.PaymentDate.ToString("s");
+                    }
                 </td>
             </tr>
         }

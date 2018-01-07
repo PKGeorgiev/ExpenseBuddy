@@ -3,6 +3,17 @@
 @foreach (var payer in Model)
 {
     <div class="row" style="font-family: Consolas">
-        <div class="col-md-12">@string.Format("{0:F3} BGN", payer.Amount) - @payer.Payer?.UserName</div>
+        <div class="col-md-12">
+            @if (payer.Status == PaymentStatus.Payed)
+            {
+                <div style="text-decoration: line-through; color: silver">
+                    @string.Format("{0:F3} BGN", payer.Amount) - @payer.Payer?.UserName
+                </div>
+            }
+            else
+            {
+                <div>@string.Format("{0:F3} BGN", payer.Amount) - @payer.Payer?.UserName</div>
+            }
+        </div>
     </div>
 }

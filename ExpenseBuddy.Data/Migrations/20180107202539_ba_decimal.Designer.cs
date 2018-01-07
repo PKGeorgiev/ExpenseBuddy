@@ -12,9 +12,10 @@ using System;
 namespace ExpenseBuddy.Web.Data.Migrations
 {
     [DbContext(typeof(ExpenseBuddyDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180107202539_ba_decimal")]
+    partial class ba_decimal
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
