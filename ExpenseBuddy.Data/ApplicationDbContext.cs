@@ -15,6 +15,7 @@ namespace ExpenseBuddy.Data
         public DbSet<BankAccount> BankAccounts { get; set; }
         public DbSet<Expense> Expenses { get; set; }
         public DbSet<ExpenseElement> ExpenseElements { get; set; }
+        public DbSet<ExpensePayer> Payers { get; set; }
 
         public ExpenseBuddyDbContext(DbContextOptions<ExpenseBuddyDbContext> options)
             : base(options)
@@ -63,6 +64,21 @@ namespace ExpenseBuddy.Data
             builder
                 .Entity<ExpensePayer>()
                 .HasKey(m => new { m.ExpenseId, m.PayerId });
+
+            builder
+                .Entity<ExpensePayer>()
+                .Property(p => p.Amount)
+                .HasColumnType("decimal(18, 3)");
+
+            builder
+                .Entity<Expense>()
+                .Property(p => p.Amount)
+                .HasColumnType("decimal(18, 3)");
+
+            builder
+                .Entity<Expense>()
+                .Property(p => p.Fee)
+                .HasColumnType("decimal(18, 3)");
 
 
             // Define Many-To-Many Expense <=> ApplicationUser

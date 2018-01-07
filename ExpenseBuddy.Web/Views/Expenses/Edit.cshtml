@@ -1,16 +1,16 @@
-﻿@model ExpenseCreateViewModel
+﻿@model ExpenseEditViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Edit";
 }
 
-<h2>Create</h2>
+<h2>Edit</h2>
 
 <h4>Expense</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Edit">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <div class="form-group">
                 <label asp-for="ExpenseDate" class="control-label"></label>
@@ -58,7 +58,7 @@
             <div class="form-group">
                 <label asp-for="Payers" class="control-label"></label>
                 <ul>
-                    @for(var k = 0; k < Model.Payers.Count(); k++)
+                    @for (var k = 0; k < Model.Payers.Count(); k++)
                     {
                         <li>
                             <input type="checkbox" asp-for="@Model.Payers[k].Selected" />

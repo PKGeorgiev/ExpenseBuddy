@@ -12,9 +12,10 @@ using System;
 namespace ExpenseBuddy.Web.Data.Migrations
 {
     [DbContext(typeof(ExpenseBuddyDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20180107103826_t")]
+    partial class t
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -124,8 +125,7 @@ namespace ExpenseBuddy.Web.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18, 3)");
+                    b.Property<decimal>("Amount");
 
                     b.Property<DateTime>("CreatedOn");
 
@@ -133,8 +133,7 @@ namespace ExpenseBuddy.Web.Data.Migrations
 
                     b.Property<DateTime>("ExpenseDate");
 
-                    b.Property<decimal>("Fee")
-                        .HasColumnType("decimal(18, 3)");
+                    b.Property<decimal>("Fee");
 
                     b.Property<string>("Notes");
 
@@ -143,8 +142,6 @@ namespace ExpenseBuddy.Web.Data.Migrations
                     b.Property<string>("Reference");
 
                     b.Property<string>("Shop");
-
-                    b.Property<int>("Status");
 
                     b.Property<int>("Type");
 
@@ -175,8 +172,7 @@ namespace ExpenseBuddy.Web.Data.Migrations
 
                     b.Property<string>("PayerId");
 
-                    b.Property<decimal>("Amount")
-                        .HasColumnType("decimal(18, 3)");
+                    b.Property<decimal>("Amount");
 
                     b.Property<int>("Status");
 

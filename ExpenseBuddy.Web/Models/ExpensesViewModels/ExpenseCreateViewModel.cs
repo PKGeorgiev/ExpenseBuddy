@@ -1,16 +1,17 @@
-﻿using System;
+﻿using AutoMapper;
+using ExpenseBuddy.Common.Mapping;
+using ExpenseBuddy.Data.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
+using System.Threading.Tasks;
 
-namespace ExpenseBuddy.Data.Models
+namespace ExpenseBuddy.Web.Models.ExpensesViewModels
 {
-    public class Expense
+    public class ExpenseCreateViewModel : IMapFrom<Expense>
     {
-        public int Id { get; set; }
-
         public DateTime ExpenseDate { get; set; }
-
-        public DateTime CreatedOn { get; set; }
 
         public ExpenseType Type { get; set; }
 
@@ -20,11 +21,11 @@ namespace ExpenseBuddy.Data.Models
 
         public decimal Fee { get; set; }
 
-        public ExpenseElement Element { get; set; }
+        public IEnumerable<SelectListItem> Elements { get; set; }
 
         public int ElementId { get; set; }
 
-        public ApplicationUser Owner { get; set; }
+        public IEnumerable<SelectListItem> Owners { get; set; }
 
         public string OwnerId { get; set; }
 
@@ -34,6 +35,7 @@ namespace ExpenseBuddy.Data.Models
 
         public ExpenseStatus Status { get; set; }
 
-        public ICollection<ExpensePayer> Payers { get; set; }
+        public IList<SelectListItem> Payers { get; set; }
+
     }
 }

@@ -1,0 +1,8 @@
+﻿@model IEnumerable<ExpenseBuddy.Data.Models.ExpensePayer>
+
+@foreach (var payer in Model)
+{
+    <div class="row" style="font-family: Consolas">
+        <div class="col-md-12">@string.Format("{0:F3} BGN", payer.Amount) - @payer.Payer?.UserName</div>
+    </div>
+}
