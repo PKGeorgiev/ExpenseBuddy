@@ -11,6 +11,7 @@
     using Microsoft.Extensions.Configuration;
     using Microsoft.Extensions.DependencyInjection;
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading.Tasks;
 
@@ -22,7 +23,8 @@
             {
                 var env = serviceScope.ServiceProvider.GetService<IHostingEnvironment>();
 
-                if (env.IsDevelopment()) {
+                if (env.IsDevelopment())
+                {
 
                     Task
                     .Run(async () =>
@@ -33,7 +35,8 @@
 
                         var user = await userManager.FindByNameAsync(username);
 
-                        if (user == null) {
+                        if (user == null)
+                        {
                             throw new Exception($"The user {username} was not found!");
                         }
 
@@ -54,13 +57,13 @@
             using (var serviceScope = app.ApplicationServices.GetRequiredService<IServiceScopeFactory>().CreateScope())
             {
                 var ctx = serviceScope.ServiceProvider.GetService<ExpenseBuddyDbContext>();
-                
+
                 ctx.Database.Migrate();
 
                 var userManager = serviceScope.ServiceProvider.GetService<UserManager<ApplicationUser>>();
                 var roleManager = serviceScope.ServiceProvider.GetService<RoleManager<IdentityRole>>();
                 var config = serviceScope.ServiceProvider.GetService<IConfiguration>();
-                
+
                 Task
                     .Run(async () =>
                     {
@@ -106,7 +109,8 @@
 
                         Bank ibank = ctx.Banks.FirstOrDefault(b => b.Name == "Internal Bank");
 
-                        if (ibank == null) {
+                        if (ibank == null)
+                        {
 
                             ibank = new Bank()
                             {
@@ -115,7 +119,7 @@
 
                             ctx.Banks.Add(ibank);
                             await ctx.SaveChangesAsync();
-                        } 
+                        }
 
                         if (!ctx.Banks.Any(b => b.Name == "FI Bank"))
                         {
@@ -145,10 +149,13 @@
                             .Include(ba => ba.BankAccounts)
                             .ToList();
 
-                        foreach (var user in users) {
+                        foreach (var user in users)
+                        {
 
-                            if (!user.BankAccounts.Any()) {
-                                var ba = new BankAccount() {
+                            if (!user.BankAccounts.Any())
+                            {
+                                var ba = new BankAccount()
+                                {
                                     Amount = 0,
                                     Bank = ibank,
                                     User = user,
@@ -160,6 +167,71 @@
                                 ctx.BankAccounts.Add(ba);
                                 await ctx.SaveChangesAsync();
                             }
+
+                        }
+
+                        if (!ctx.ExpenseElements.Any())
+                        {
+
+                            var t = new List<ExpenseElement>()
+                            {
+                                new ExpenseElement()
+                                {
+                                    Name = "Food"
+                                },
+                                new ExpenseElement()
+                                {
+                                    Name = "Rent"
+                                },
+                                new ExpenseElement()
+                                {
+                                    Name = "Electricity"
+                                },
+                                new ExpenseElement()
+                                {
+                                    Name = "Water"
+                                },
+                                new ExpenseElement()
+                                {
+                                    Name = "Heating"
+                                },
+                                new ExpenseElement()
+                                {
+                                    Name = "Mobile Phone"
+                                },
+                                new ExpenseElement()
+                                {
+                                    Name = "Internet"
+                                },
+                                new ExpenseElement()
+                                {
+                                    Name = "Tax"
+                                },
+                                new ExpenseElement()
+                                {
+                                    Name = "Trash tax"
+                                },
+                                new ExpenseElement()
+                                {
+                                    Name = "Local tax"
+                                },
+                                new ExpenseElement()
+                                {
+                                    Name = "Cigarettes"
+                                },
+                                new ExpenseElement()
+                                {
+                                    Name = "Electronics"
+                                },
+                                new ExpenseElement()
+                                {
+                                    Name = "Other"
+                                }
+                            };
+
+                            await ctx.ExpenseElements.AddRangeAsync(t);
+                            await ctx.SaveChangesAsync();
+
 
                         }
 

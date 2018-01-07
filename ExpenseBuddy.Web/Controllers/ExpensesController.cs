@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using ExpenseBuddy.Data.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ExpenseBuddy.Web.Controllers
@@ -10,7 +11,12 @@ namespace ExpenseBuddy.Web.Controllers
     {
         public IActionResult Index()
         {
-            return View();
+            return View(new List<Expense>());
+        }
+
+        public IActionResult Create()
+        {
+            return View(new Expense());
         }
     }
 }

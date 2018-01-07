@@ -12,6 +12,10 @@ namespace ExpenseBuddy.Data.Models
 
         public string PayerId { get; set; }
 
-        public ApplicationUser Payer { get; set; }        
+        public ApplicationUser Payer { get; set; }
+
+        public decimal Amount { get; set; }
+
+        public PaymentStatus Status { get; set; }
     }
 }
