@@ -12,8 +12,12 @@ namespace ExpenseBuddy.Web.Models.ExpensesViewModels
     {
         public int Id { get; set; }
 
+        [Display(Name = "Expense Date")]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime ExpenseDate { get; set; }
 
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
+        [Display(Name = "Created On")]
         public DateTime CreatedOn { get; set; }
 
         public ExpenseType Type { get; set; }

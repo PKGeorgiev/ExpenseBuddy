@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ExpenseBuddy.Common.Mapping;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Text;

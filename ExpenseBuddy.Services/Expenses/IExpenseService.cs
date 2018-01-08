@@ -14,5 +14,7 @@ namespace ExpenseBuddy.Services.Expenses
         Task<IEnumerable<SelectListItem>> GetPayersList(int expenseId, string userId);
         Task<IEnumerable<SelectListItem>> GetElementsList();
         Task CreateAsync(Expense expense, IEnumerable<SelectListItem> selectedPayers);
+        Task<Expense> FindById(int id);
+        Task Update(int expId, Expense updatedExpense, ICollection<SelectListItem> selectedItems);
     }
 }

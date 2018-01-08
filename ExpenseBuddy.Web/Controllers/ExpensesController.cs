@@ -35,7 +35,11 @@ namespace ExpenseBuddy.Web.Controllers
         {
             var exp = await _expService.All();
 
-            return View(exp);
+            IEnumerable<ExpenseListingViewModel> items = new List<ExpenseListingViewModel>();
+
+            var expVm = Mapper.Map(exp, items);
+
+            return View(expVm);
         }
 
         public async Task<IActionResult> Create()
@@ -101,31 +105,24 @@ namespace ExpenseBuddy.Web.Controllers
         public async Task<IActionResult> Edit(int id)
         {
 
-            var ex = await _ctx
-                .Expenses
-                .Include(k => k.Owner)
-                .Include(k => k.Payers)
-                .FirstOrDefaultAsync(k => k.Id == id);
+            var ex = await _expService.FindById(id);
 
             if (ex == null) {
                 return NotFound();
             }
 
             var user = await _userManager.FindByNameAsync(User.Identity.Name);
-
-            var owners = _expService.GetOwnersList(ex.OwnerId);
-
-            var payers = await _expService.GetPayersList(ex.Id, user.Id);
-
-            var elements = await _expService.GetElementsList();
+            var o = _expService.GetOwnersList(ex.OwnerId);
+            var p = await _expService.GetPayersList(ex.Id, user.Id);
+            var e = await _expService.GetElementsList();
 
             var m = Mapper
                 .Map(ex, new ExpenseEditViewModel() { }, opt 
                     => opt.BeforeMap((s, d) => 
                     {
-                        d.Elements = elements;
-                        d.Payers = payers.ToList();
-                        d.Owners = owners;
+                        d.Elements = e;
+                        d.Payers = p.ToList();
+                        d.Owners = o;
                     }));
 
             return View(m);
@@ -145,58 +142,42 @@ namespace ExpenseBuddy.Web.Controllers
                 .Where(k => k.Selected)
                 .Select(k => k.Value);
 
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+
             if (selectedPayers.Count() == 0)
             {
+                var o = _expService.GetOwnersList(expense.OwnerId);
+                var p = await _expService.GetPayersList(expense.Id, user.Id);
+                var e = await _expService.GetElementsList();
+
+                expense.Owners = o;
+                expense.Payers = p.ToList();
+                expense.Elements = e;
 
                 ModelState.AddModelError("", "You must select at least one Payer!");
                 return View(expense);
-
             }
 
-            var ex = await _ctx
-                .Expenses
-                .Include(k => k.Owner)
-                .Include(k => k.Payers)
-                .FirstOrDefaultAsync(k => k.Id == id);
 
-            if (ex == null) {
-                return NotFound();
-            }
+            var expUpdated = Mapper.Map(expense, new Expense());
 
-            var removedPayers =
-                ex.Payers
-                .Where(k => !selectedPayers.Contains(k.PayerId))
-                .ToList();
-
-            var addedPayers =
-                selectedPayers
-                .Where(k => !ex.Payers.Any(p => p.PayerId == k))
-                .Select(k => new ExpensePayer()
-                {
-                    ExpenseId = ex.Id,
-                    PayerId = k
-                });
-
-            foreach (var rp in removedPayers) {
-                ex.Payers.Remove(rp);
-            }
-
-            foreach (var ap in addedPayers)
+            try
             {
-                ex.Payers.Add(ap);
+                await _expService.Update(id, expUpdated, expense.Payers);
+            }
+            catch (Exception exeption) {
+                var o = _expService.GetOwnersList(expense.OwnerId);
+                var p = await _expService.GetPayersList(expense.Id, user.Id);
+                var e = await _expService.GetElementsList();
+
+                expense.Owners = o;
+                expense.Payers = p.ToList();
+                expense.Elements = e;
+
+                ModelState.AddModelError("", exeption.Message);
+                return View(expense);
             }
 
-            decimal part = Math.Round((expense.Amount + expense.Fee) / selectedPayers.Count(), 3);
-
-            foreach (var p in ex.Payers)
-            {
-                p.Amount = part;
-            };
-
-            Mapper.Map(expense, ex);
-
-            _ctx.Expenses.Update(ex);
-            await _ctx.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }
