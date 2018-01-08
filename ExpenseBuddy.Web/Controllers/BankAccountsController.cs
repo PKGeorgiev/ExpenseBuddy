@@ -13,7 +13,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace ExpenseBuddy.Web.Controllers
 {
-    public class BankAccountsController : Controller
+    public class BankAccountsController : BaseController
     {
         private readonly IBankAccountRepositoryService _bankAccounts;
         private readonly IBankRepositoryService _banks;

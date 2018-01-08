@@ -12,6 +12,8 @@ namespace ExpenseBuddy.Web.Controllers
     public class DutiesController : BaseController
     {
         private readonly IDutiesService _duties;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private ApplicationUser _user;
 
         public DutiesController(
             IDutiesService duties,

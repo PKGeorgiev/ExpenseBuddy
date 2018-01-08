@@ -12,8 +12,8 @@ namespace ExpenseBuddy.Web.Controllers
     [Authorize]
     public class BaseController : Controller
     {
-        protected UserManager<ApplicationUser> _userManager;
-        protected ApplicationUser _user;
+        //protected UserManager<ApplicationUser> _userManager;
+        //protected ApplicationUser _user;
 
         public BaseController()
         {

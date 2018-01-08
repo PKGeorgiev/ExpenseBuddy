@@ -14,7 +14,7 @@ using AutoMapper;
 
 namespace ExpenseBuddy.Web.Controllers
 {
-    public class ExpensesController : Controller
+    public class ExpensesController : BaseController
     {
         private readonly ExpenseBuddyDbContext _ctx;
         private readonly UserManager<ApplicationUser> _userManager;
