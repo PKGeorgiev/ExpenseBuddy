@@ -4,6 +4,7 @@ using ExpenseBuddy.Data.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -13,14 +14,18 @@ namespace ExpenseBuddy.Web.Models.BankAccountsViewModels
     {
         public int Id { get; set; }
 
+        [Required]
+        [MaxLength(50)]
         public string Number { get; set; }
 
         public string Notes { get; set; }
 
         public bool IsActive { get; set; }
 
+        [Required]
         public int BankId { get; set; }
 
+        [Required]
         public string UserId { get; set; }
 
         public decimal Amount { get; set; }
@@ -32,7 +37,8 @@ namespace ExpenseBuddy.Web.Models.BankAccountsViewModels
             mapper
                 .CreateMap<BankAccountEditViewModel, BankAccount>()
                 .ForMember(m => m.User, cfg => cfg.Ignore())
-                .ForMember(m => m.Bank, cfg => cfg.Ignore());
+                .ForMember(m => m.Bank, cfg => cfg.Ignore())
+                .ForMember(m => m.Amount, cfg => cfg.Ignore());
         }
     }
 }

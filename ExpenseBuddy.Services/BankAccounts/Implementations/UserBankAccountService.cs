@@ -44,5 +44,79 @@ namespace ExpenseBuddy.Services.BankAccounts.Implementations
                 .ToListAsync();
         }
 
+        private async Task CheckOwnerOrAdmin(string userId, string ownerId) {
+            if (userId != ownerId)
+            {
+                if (!(await _um.IsInRoleAsync(await _um.FindByIdAsync(userId), "Administrator"))){
+                    throw new Exception("Access Denied!");
+                }
+            }
+        }
+
+        public async Task<BankAccount> FindById(int bankAccountId)
+        {
+            var ba = await _ctx
+                .BankAccounts
+                .Include(p => p.Bank)
+                .Include(p => p.User)
+                .FirstOrDefaultAsync(k => k.Id == bankAccountId);
+
+            if (ba == null)
+            {
+                throw new Exception("");
+            }
+
+            return ba;
+        }
+
+        public async Task<BankAccount> FindByNumber(string ownerId, string bankAccountNumber)
+        {
+            var ba = await _ctx
+                .BankAccounts
+                .Include(p => p.Bank)
+                .Include(p => p.User)
+                .FirstOrDefaultAsync(k => k.UserId == ownerId && k.Number == bankAccountNumber);
+
+            if (ba == null)
+            {
+                throw new Exception("");
+            }
+
+            return ba;
+        }
+
+        public async Task AddFunds(string userId, string ownerId, string bankAccountNumber, decimal amount)
+        {
+            var ba = await FindByNumber(ownerId, bankAccountNumber);
+
+            await CheckOwnerOrAdmin(userId, ba.UserId);
+
+            ba.Amount += amount;
+
+            await _ctx.SaveChangesAsync();
+        }
+
+        public async Task GetFunds(string userId, string ownerId, string bankAccountNumber, decimal amount)
+        {
+            var ba = await FindByNumber(ownerId, bankAccountNumber);
+
+            await CheckOwnerOrAdmin(userId, ba.UserId);
+
+            if (ba.Amount < amount)
+            {
+                throw new Exception("Insufficient funds!");
+            }
+
+            ba.Amount -= amount;
+
+            await _ctx.SaveChangesAsync();
+        }
+
+        public async Task Create(BankAccount ba) {
+
+            await _ctx.BankAccounts.AddAsync(ba);
+            await _ctx.SaveChangesAsync();
+        }
+
     }
 }

@@ -18,20 +18,20 @@ namespace ExpenseBuddy.Web.Controllers
         private readonly IBankAccountRepositoryService _bankAccounts;
         private readonly IBankRepositoryService _banks;
         private readonly IApplicationUserRepositoryService _users;
-        private readonly IUserBankAccountService _bankAccountsService;
+        private readonly IUserBankAccountService _bankUserAccountsService;
         private readonly UserManager<ApplicationUser> _um;
 
         public BankAccountsController(
             IBankAccountRepositoryService bankAccounts,
             IBankRepositoryService banks,
             IApplicationUserRepositoryService users,
-            IUserBankAccountService bankAccountsService,
+            IUserBankAccountService bankUserAccountsService,
             UserManager<ApplicationUser> um)
         {
             _bankAccounts = bankAccounts;
             _banks = banks;
             _users = users;
-            _bankAccountsService = bankAccountsService;
+            _bankUserAccountsService = bankUserAccountsService;
             _um = um;
         }
 
@@ -39,12 +39,14 @@ namespace ExpenseBuddy.Web.Controllers
         {
             var user = await _um.FindByNameAsync(User.Identity.Name);
 
-            if (await _um.IsInRoleAsync(user, "Administrator")) {
-                var ba = await _bankAccountsService.All();
-                return View(ba);
-            } else
+            if (await _um.IsInRoleAsync(user, "Administrator"))
             {
-                var ba = await _bankAccountsService.AllForUser(user.Id);
+                var ba = await _bankUserAccountsService.All();
+                return View(ba);
+            }
+            else
+            {
+                var ba = await _bankUserAccountsService.AllForUser(user.Id);
                 return View(ba);
             }
 
@@ -78,11 +80,10 @@ namespace ExpenseBuddy.Web.Controllers
             }
 
             var user = (await _users.AllAsync(predicate: k => k.UserName == User.Identity.Name)).FirstOrDefault();
-           
+
             var ba = Mapper.Map(bankAccount, new BankAccount(), opt => opt.AfterMap((src, dst) => dst.UserId = user.Id));
 
-            await _bankAccounts.CreateAsync(ba);
-            await _bankAccounts.SaveChangesAsync();
+            await _bankUserAccountsService.Create(ba);
 
             return RedirectToAction(nameof(Index));
         }
@@ -105,13 +106,15 @@ namespace ExpenseBuddy.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(BankAccountEditViewModel bankAccount)
         {
-            if (!ModelState.IsValid) {
+            if (!ModelState.IsValid)
+            {
                 return View(bankAccount);
             }
 
             var b = (await _bankAccounts.AllAsync(predicate: k => k.Id == bankAccount.Id)).FirstOrDefault();
 
-            if (b == null) {
+            if (b == null)
+            {
                 return NotFound();
             }
 
@@ -122,6 +125,39 @@ namespace ExpenseBuddy.Web.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-    }
+        public async Task<IActionResult> AddFunds(int id)
+        {
+            var ba = await _bankUserAccountsService.FindById(id);
 
+            var afba = Mapper.Map(ba, new BankAccountAddFundsViewModel());
+
+            return View(afba);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddFunds(int id, BankAccountAddFundsViewModel funds)
+        {
+
+            if (!ModelState.IsValid) {
+                return View(funds);
+            }
+
+            try
+            {
+
+                var ba = await _bankUserAccountsService.FindById(id);
+
+                var user = await _um.FindByNameAsync(User.Identity.Name);
+
+                await _bankUserAccountsService.AddFunds(user.Id, ba.UserId, ba.Number, funds.AddAmount);
+
+            }
+            catch (Exception e) {
+                ModelState.AddModelError("", e.Message);
+                return View(funds);
+            }
+
+            return RedirectToAction(nameof(Index));
+        }
+    }
 }

@@ -4,6 +4,7 @@ using ExpenseBuddy.Data.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -11,12 +12,15 @@ namespace ExpenseBuddy.Web.Models.BankAccountsViewModels
 {
     public class BankAccountCreateViewModel : IMapFrom<BankAccount>, IHaveCustomMapping
     {
+        [Required]
+        [MaxLength(50)]
         public string Number { get; set; }
 
         public string Notes { get; set; }
 
         public bool IsActive { get; set; }
 
+        [Required]
         public int BankId { get; set; }
 
         public ApplicationUser User { get; set; }

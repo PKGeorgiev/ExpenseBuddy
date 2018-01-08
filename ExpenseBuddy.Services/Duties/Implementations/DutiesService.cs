@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
 using Microsoft.AspNetCore.Identity;
+using ExpenseBuddy.Services.BankAccounts;
 
 namespace ExpenseBuddy.Services.Duties.Implementations
 {
@@ -14,13 +15,16 @@ namespace ExpenseBuddy.Services.Duties.Implementations
     {
         private readonly ExpenseBuddyDbContext _ctx;
         private readonly UserManager<ApplicationUser> _um;
+        private readonly IUserBankAccountService _ba;
 
         public DutiesService(
             ExpenseBuddyDbContext ctx,
-            UserManager<ApplicationUser> um)
+            UserManager<ApplicationUser> um,
+            IUserBankAccountService ba)
         {
             _ctx = ctx;
             _um = um;
+            _ba = ba;
         }
 
         public async Task<IEnumerable<ExpensePayer>> AllForUser(string userId)
@@ -88,17 +92,7 @@ namespace ExpenseBuddy.Services.Duties.Implementations
         {
             var du = await FindById(userId, expenseId, payerId);
 
-            var ba = await _ctx
-                .BankAccounts
-                .FirstOrDefaultAsync(k => k.UserId == payerId && k.Number == "500");
-
-            if (ba.Amount < du.Amount) {
-                throw new Exception("Insufficient availability in Payer's Bank Account!");
-            }
-
-            ba.Amount -= du.Amount;
-
-            _ctx.BankAccounts.Update(ba);
+            await _ba.GetFunds(userId, payerId, "500", du.Amount);
 
             du.Status = PaymentStatus.Payed;
             du.PaymentDate = DateTime.Now;
