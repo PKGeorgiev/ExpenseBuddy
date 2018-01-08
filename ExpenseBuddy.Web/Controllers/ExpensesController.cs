@@ -31,15 +31,26 @@ namespace ExpenseBuddy.Web.Controllers
             _expService = expService;
         }
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(int? page, string search, string opt)
         {
-            var exp = await _expService.All();
+            //var exp = await _expService.All();
 
-            IEnumerable<ExpenseListingViewModel> items = new List<ExpenseListingViewModel>();
+            if (opt == "clear-filter")
+            {
+                ViewData["filter"] = "";
+                search = "";
+            }
+            else {
+                ViewData["filter"] = search;
+            }
 
-            var expVm = Mapper.Map(exp, items);
+            var expPaged = await _expService.AllPaginated<Expense>(search, page, 3);
 
-            return View(expVm);
+            //IEnumerable<ExpenseListingViewModel> items = new List<ExpenseListingViewModel>();
+
+            //var expVm = Mapper.Map(expPaged, items);
+
+            return View(expPaged);
         }
 
         public async Task<IActionResult> Create()

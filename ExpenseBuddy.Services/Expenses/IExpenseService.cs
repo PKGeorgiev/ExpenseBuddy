@@ -16,5 +16,6 @@ namespace ExpenseBuddy.Services.Expenses
         Task CreateAsync(Expense expense, IEnumerable<SelectListItem> selectedPayers);
         Task<Expense> FindById(int id);
         Task Update(int expId, Expense updatedExpense, ICollection<SelectListItem> selectedItems);
+        Task<IEnumerable<Expense>> AllPaginated<TDestination>(string search, int? page, int pageSize = 5);
     }
 }

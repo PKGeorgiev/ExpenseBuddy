@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using ExpenseBuddy.Common.Infrastructure;
 using ExpenseBuddy.Data;
 using ExpenseBuddy.Data.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -33,6 +34,27 @@ namespace ExpenseBuddy.Services.Expenses.Implementations
 
                 .ToListAsync();
         }
+
+        public async Task<IEnumerable<Expense>> AllPaginated<TDestination>(string search, int? page, int pageSize) {
+            var tmp = _ctx
+                .Expenses
+                .Include(k => k.Payers)
+                    .ThenInclude(p => p.Payer)
+                .Include(k => k.Owner)
+                .Include(k => k.Element).AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search)) {
+                search = search.ToLower();
+                tmp = tmp.Where(k => k.Shop.ToLower().Contains(search));
+            }
+
+            tmp = tmp
+                .OrderBy(k => k.Status)
+                .ThenByDescending(k => k.ExpenseDate);
+
+            return await PaginatedList<Expense>.CreateAsync(tmp, page ?? 1, pageSize);
+        }
+
 
         public async Task<Expense> FindById(int id)
         {

@@ -1,4 +1,4 @@
-﻿@model IEnumerable<ExpenseListingViewModel>
+﻿@model PaginatedList<Expense>
 
 @{
     ViewData["Title"] = "Index";
@@ -9,32 +9,47 @@
 <p>
     <a asp-action="Create" class="btn btn-primary">Create New</a>
 </p>
+<br />
+<div class="row">
+    <div class="col-md-4">
+        <form method="get">
+            <div class="form-group">
+                <input type="text" asp-action="Index" name="search" value="@ViewData["filter"]" />
+                <button type="submit" class="btn btn-default">Search</button> |
+                <button type="submit" class="btn btn-default" name="opt" value="clear-filter">Clear</button>
+            </div>
+
+        </form>
+    </div>
+</div>
+
+
 <table class="table table-hover">
     <thead>
         <tr>
             <th>
-                @Html.DisplayNameFor(model => model.ExpenseDate)
+                @Html.DisplayNameFor(model => model.FirstOrDefault().ExpenseDate)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Type)
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Type)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Amount)
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Amount)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Fee)
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Fee)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Status)
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Status)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Shop)
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Shop)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Element)
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Element)
             </th>
             <th>
-                @Html.DisplayNameFor(model => model.Payers)
+                @Html.DisplayNameFor(model => model.FirstOrDefault().Payers)
             </th>
             <th></th>
         </tr>
@@ -86,3 +101,21 @@
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
 }
+
+@{
+    var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+    var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+}
+
+<div>Page @Model.PageIndex of @Model.TotalPages</div><br />
+
+<a asp-action="Index"
+   asp-route-page="@(Model.PageIndex - 1)"
+   class="btn btn-default @prevDisabled">
+    Prev
+</a>
+<a asp-action="Index"
+   asp-route-page="@(Model.PageIndex + 1)"
+   class="btn btn-default @nextDisabled">
+    Next
+</a>
