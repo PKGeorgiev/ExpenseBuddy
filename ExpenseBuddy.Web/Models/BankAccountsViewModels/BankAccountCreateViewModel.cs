@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ExpenseBuddy.Common.Mapping;
 using ExpenseBuddy.Data.Models;
+using ExpenseBuddy.Web.Infrastructure.Validations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
@@ -14,8 +15,10 @@ namespace ExpenseBuddy.Web.Models.BankAccountsViewModels
     {
         [Required]
         [MaxLength(50)]
+        [BankNumber]
         public string Number { get; set; }
 
+        [MaxLength(100)]
         public string Notes { get; set; }
 
         public bool IsActive { get; set; }

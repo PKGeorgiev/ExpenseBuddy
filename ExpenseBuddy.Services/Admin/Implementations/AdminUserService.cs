@@ -33,6 +33,7 @@ namespace ExpenseBuddy.Services.Admin.Implementations
         {
             var users = await this._db
                 .Users
+                .OrderBy(k => k.UserName)
                 .ProjectTo<AdminUserListingServiceModel>()
                 .ToListAsync();
 
@@ -103,6 +104,21 @@ namespace ExpenseBuddy.Services.Admin.Implementations
             if (!ir.Succeeded) {
                 throw new Exception($"{ir.Errors.FirstOrDefault().Code}: {ir.Errors.FirstOrDefault().Description}");
             }
+
+
+            // Create default Cash bank account (500)
+            var ba = new BankAccount()
+            {
+                Amount = 0,
+                BankId = 1,
+                IsActive = true,
+                Notes = "Cash",
+                Number = "500",
+                UserId = user.Id
+            };
+
+            await _db.BankAccounts.AddAsync(ba);
+            await _db.SaveChangesAsync();
 
         }
     }

@@ -1,4 +1,5 @@
 ﻿using ExpenseBuddy.Data.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -15,5 +16,6 @@ namespace ExpenseBuddy.Services.BankAccounts
         Task AddFunds(string userId, string ownerId, string bankAccountNumber, decimal amount);
         Task GetFunds(string userId, string ownerId, string bankAccountNumber, decimal amount);
         Task Create(BankAccount ba);
+        IEnumerable<SelectListItem> GetBanksList();
     }
 }

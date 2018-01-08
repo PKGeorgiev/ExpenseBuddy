@@ -58,7 +58,7 @@
             <div class="form-group">
                 <label asp-for="Payers" class="control-label"></label>
                 <ul>
-                    @for(var k = 0; k < Model.Payers.Count(); k++)
+                    @for (var k = 0; k < Model.Payers.Count(); k++)
                     {
                         <li>
                             <input type="checkbox" asp-for="@Model.Payers[k].Selected" />
@@ -82,3 +82,6 @@
     <a asp-action="Index">Back to List</a>
 </div>
 
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

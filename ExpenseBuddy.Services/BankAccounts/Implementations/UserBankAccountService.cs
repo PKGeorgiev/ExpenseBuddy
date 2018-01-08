@@ -1,6 +1,7 @@
 ﻿using ExpenseBuddy.Data;
 using ExpenseBuddy.Data.Models;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -44,10 +45,12 @@ namespace ExpenseBuddy.Services.BankAccounts.Implementations
                 .ToListAsync();
         }
 
-        private async Task CheckOwnerOrAdmin(string userId, string ownerId) {
+        private async Task CheckOwnerOrAdmin(string userId, string ownerId)
+        {
             if (userId != ownerId)
             {
-                if (!(await _um.IsInRoleAsync(await _um.FindByIdAsync(userId), "Administrator"))){
+                if (!(await _um.IsInRoleAsync(await _um.FindByIdAsync(userId), "Administrator")))
+                {
                     throw new Exception("Access Denied!");
                 }
             }
@@ -112,10 +115,23 @@ namespace ExpenseBuddy.Services.BankAccounts.Implementations
             await _ctx.SaveChangesAsync();
         }
 
-        public async Task Create(BankAccount ba) {
+        public async Task Create(BankAccount ba)
+        {
 
             await _ctx.BankAccounts.AddAsync(ba);
             await _ctx.SaveChangesAsync();
+        }
+
+        public IEnumerable<SelectListItem> GetBanksList()
+        {
+            return _ctx
+                .Banks
+                .Where(w => w.Name != "Internal Bank")
+                .Select(k => new SelectListItem()
+                {
+                    Text = k.Name,
+                    Value = k.Id.ToString()
+                }).ToList();
         }
 
     }

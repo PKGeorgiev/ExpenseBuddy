@@ -44,10 +44,10 @@
                 <td>
                     @Html.DisplayFor(modelItem => item.Payer.UserName)
                 </td>
-                <td>        
+                <td>
                     @if (item.Status == PaymentStatus.Unpayed)
                     {
-                    @Html.ActionLink("Pay", "Pay", new { expenseId = item.ExpenseId, payerId = item.PayerId }, new { @class = "btn btn-primary btn-xs" })
+                        @Html.ActionLink("Pay", "Pay", new { expenseId = item.ExpenseId, payerId = item.PayerId }, new { @class = "btn btn-primary btn-xs" })
                     }
                     else
                     {
@@ -58,3 +58,7 @@
         }
     </tbody>
 </table>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

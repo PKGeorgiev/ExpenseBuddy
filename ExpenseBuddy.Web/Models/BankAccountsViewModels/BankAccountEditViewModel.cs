@@ -18,6 +18,7 @@ namespace ExpenseBuddy.Web.Models.BankAccountsViewModels
         [MaxLength(50)]
         public string Number { get; set; }
 
+        [MaxLength(100)]
         public string Notes { get; set; }
 
         public bool IsActive { get; set; }

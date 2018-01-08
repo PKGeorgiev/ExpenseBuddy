@@ -50,22 +50,15 @@ namespace ExpenseBuddy.Web.Controllers
                 return View(ba);
             }
 
-
-
         }
 
-        public async Task<IActionResult> Create()
+        public IActionResult Create()
         {
 
             var ba = new BankAccountCreateViewModel()
             {
                 IsActive = true,
-                Banks = (await _banks.AllAsync(predicate: w => w.Name != "Internal Bank"))
-                    .Select(k => new SelectListItem()
-                    {
-                        Text = k.Name,
-                        Value = k.Id.ToString()
-                    }).ToList()
+                Banks = _bankUserAccountsService.GetBanksList()
             };
 
             return View(ba);
@@ -76,28 +69,37 @@ namespace ExpenseBuddy.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
+                bankAccount.Banks = _bankUserAccountsService.GetBanksList();
+
                 return View(bankAccount);
             }
 
-            var user = (await _users.AllAsync(predicate: k => k.UserName == User.Identity.Name)).FirstOrDefault();
+            try
+            {
+                var user = (await _users.AllAsync(predicate: k => k.UserName == User.Identity.Name)).FirstOrDefault();
 
-            var ba = Mapper.Map(bankAccount, new BankAccount(), opt => opt.AfterMap((src, dst) => dst.UserId = user.Id));
+                var ba = Mapper.Map(bankAccount, new BankAccount(), opt => opt.AfterMap((src, dst) => dst.UserId = user.Id));
 
-            await _bankUserAccountsService.Create(ba);
+                await _bankUserAccountsService.Create(ba);
+            }
+            catch (Exception e) {
+
+                ModelState.AddModelError("", e.Message);
+
+                bankAccount.Banks = _bankUserAccountsService.GetBanksList();
+
+                return View(bankAccount);
+            }
 
             return RedirectToAction(nameof(Index));
+
         }
 
         public async Task<IActionResult> Edit(int id)
         {
             var b = (await _bankAccounts.AllAsync<BankAccountEditViewModel>(predicate: k => k.Id == id)).FirstOrDefault();
 
-            b.Banks = (await _banks.AllAsync(predicate: w => w.Name != "Internal Bank"))
-                    .Select(k => new SelectListItem()
-                    {
-                        Text = k.Name,
-                        Value = k.Id.ToString()
-                    }).ToList();
+            b.Banks = _bankUserAccountsService.GetBanksList();
 
 
             return View(b);
@@ -108,19 +110,33 @@ namespace ExpenseBuddy.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
+                bankAccount.Banks = _bankUserAccountsService.GetBanksList();
                 return View(bankAccount);
             }
 
-            var b = (await _bankAccounts.AllAsync(predicate: k => k.Id == bankAccount.Id)).FirstOrDefault();
-
-            if (b == null)
+            try
             {
-                return NotFound();
+
+                var b = (await _bankAccounts.AllAsync(predicate: k => k.Id == bankAccount.Id)).FirstOrDefault();
+
+                if (b == null)
+                {
+                    return NotFound();
+                }
+
+                Mapper.Map(bankAccount, b);
+
+                await _bankAccounts.SaveChangesAsync();
+
             }
+            catch (Exception e) {
 
-            Mapper.Map(bankAccount, b);
+                ModelState.AddModelError("", e.Message);
 
-            await _bankAccounts.SaveChangesAsync();
+                bankAccount.Banks = _bankUserAccountsService.GetBanksList();
+
+                return View(bankAccount);
+            }
 
             return RedirectToAction(nameof(Index));
         }

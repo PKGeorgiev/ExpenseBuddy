@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AutoMapper.QueryableExtensions;
 using AutoMapper;
+using ExpenseBuddy.Services.Expenses;
 
 namespace ExpenseBuddy.Web.Controllers
 {
@@ -18,52 +19,39 @@ namespace ExpenseBuddy.Web.Controllers
     {
         private readonly ExpenseBuddyDbContext _ctx;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IExpenseService _expService;
 
         public ExpensesController(
             ExpenseBuddyDbContext ctx,
-            UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager,
+            IExpenseService expService)
         {
             _ctx = ctx;
             _userManager = userManager;
+            _expService = expService;
         }
 
         public async Task<IActionResult> Index()
         {
-            var exp = await _ctx
-                .Expenses
-                .Include(k => k.Payers)
-                    .ThenInclude(p => p.Payer)
-                .Include(k => k.Owner)
-                .Include(k => k.Element)
-                .ToListAsync();
-
+            var exp = await _expService.All();
 
             return View(exp);
         }
 
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
 
-            var u = _ctx
-                .Users
-                .Select(k => new SelectListItem()
-                {
-                    Selected = User.Identity.Name == k.UserName,
-                    Text = k.UserName,
-                    Value = k.Id
-                }).ToList();
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            var p = await _expService.GetPayersList(0, user.Id);
+            var o = _expService.GetOwnersList(user.Id);
+            var e = await _expService.GetElementsList();
 
             var m = new ExpenseCreateViewModel()
             {
-                Elements = _ctx.ExpenseElements
-                    .Select(k => new SelectListItem()
-                    {
-                        Text = k.Name,
-                        Value = k.Id.ToString()
-                    }),
-
-                Owners = u,
-                Payers = u,
+                Elements = e,
+                Owners = o,
+                Payers = p.ToList(),
                 ExpenseDate = DateTime.Now
             };
 
@@ -78,46 +66,33 @@ namespace ExpenseBuddy.Web.Controllers
                 return View(expense);
             }
 
-            var ex = new Expense()
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
+
+            var selectedPayers = expense
+                .Payers
+                .Where(k => k.Selected)
+                .Select(k => k.Value);
+
+            if (selectedPayers.Count() == 0)
             {
-                Amount = expense.Amount,
-                CreatedOn = DateTime.Now,
-                ElementId = expense.ElementId,
-                ExpenseDate = expense.ExpenseDate,
-                Fee = expense.Fee,
-                Notes = expense.Notes,
-                OwnerId = expense.OwnerId,
-                Reference = expense.Reference,
-                Shop = expense.Shop,
-                Type = expense.Type,
-                Status = ExpenseStatus.AwaitingPayment
-            };
 
-            _ctx.Expenses.Add(ex);
-            
+                ModelState.AddModelError("", "You must select at least one Payer!");
 
-            var sp = expense.Payers.Where(k => k.Selected == true).Select(k => k.Value).ToList();
+                var p = await _expService.GetPayersList(0, user.Id);
+                var o = _expService.GetOwnersList("");
+                var e = await _expService.GetElementsList();
 
-            var payers = _ctx
-                .Users
-                .Where(k => sp.Any(p => k.Id == p))
-                .Select(k => new ExpensePayer()
-                {
-                    PayerId = k.Id,
-                    ExpenseId = ex.Id
-                });
+                expense.Payers = p.ToList();
+                expense.Owners = o;
+                expense.Elements = e;
 
-            await _ctx.Payers.AddRangeAsync(payers);
+                return View(expense);
 
-            decimal part = Math.Round((expense.Amount + expense.Fee) / ex.Payers.Count, 3);
+            }
 
-            foreach (var p in ex.Payers)
-            {
-                p.Amount = part;
-            };
+            var ex = Mapper.Map(expense, new Expense());
 
-
-            await _ctx.SaveChangesAsync();
+            await _expService.CreateAsync(ex, expense.Payers);
 
 
             return RedirectToAction(nameof(Index));
@@ -136,37 +111,20 @@ namespace ExpenseBuddy.Web.Controllers
                 return NotFound();
             }
 
-            var owners = _ctx
-                .Users
-                .Select(k => new SelectListItem()
-                {
-                    Selected = ex.OwnerId == k.Id,
-                    Text = k.UserName,
-                    Value = k.Id
-                }).ToList();
+            var user = await _userManager.FindByNameAsync(User.Identity.Name);
 
-            var payers = _ctx
-                .Users
-                .Select(k => new SelectListItem()
-                {
-                    Selected = ex.Payers.Any(p => p.PayerId == k.Id),
-                    Text = $"{k.UserName}",
-                    Value = k.Id
-                }).ToList();
+            var owners = _expService.GetOwnersList(ex.OwnerId);
 
-            var elements = _ctx.ExpenseElements
-                    .Select(k => new SelectListItem()
-                    {
-                        Text = k.Name,
-                        Value = k.Id.ToString()
-                    });
+            var payers = await _expService.GetPayersList(ex.Id, user.Id);
+
+            var elements = await _expService.GetElementsList();
 
             var m = Mapper
                 .Map(ex, new ExpenseEditViewModel() { }, opt 
                     => opt.BeforeMap((s, d) => 
                     {
                         d.Elements = elements;
-                        d.Payers = payers;
+                        d.Payers = payers.ToList();
                         d.Owners = owners;
                     }));
 
@@ -182,6 +140,19 @@ namespace ExpenseBuddy.Web.Controllers
                 return View(expense);
             }
 
+            var selectedPayers = expense
+                .Payers
+                .Where(k => k.Selected)
+                .Select(k => k.Value);
+
+            if (selectedPayers.Count() == 0)
+            {
+
+                ModelState.AddModelError("", "You must select at least one Payer!");
+                return View(expense);
+
+            }
+
             var ex = await _ctx
                 .Expenses
                 .Include(k => k.Owner)
@@ -190,19 +161,6 @@ namespace ExpenseBuddy.Web.Controllers
 
             if (ex == null) {
                 return NotFound();
-            }
-
-
-            var selectedPayers = expense
-                .Payers
-                .Where(k => k.Selected)
-                .Select(k => k.Value);
-
-            if (selectedPayers.Count() == 0) {
-
-                ModelState.AddModelError("", "You must select at least one Payer!");
-                return View(expense);
-
             }
 
             var removedPayers =
