@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using AutoMapper.QueryableExtensions;
 using AutoMapper;
 using ExpenseBuddy.Services.Expenses;
+using ExpenseBuddy.Common.Infrastructure;
 
 namespace ExpenseBuddy.Web.Controllers
 {
@@ -39,6 +40,7 @@ namespace ExpenseBuddy.Web.Controllers
             {
                 ViewData["filter"] = "";
                 search = "";
+                return RedirectToAction(nameof(Index));
             }
             else {
                 ViewData["filter"] = search;
@@ -46,7 +48,7 @@ namespace ExpenseBuddy.Web.Controllers
 
             var expPaged = await _expService.AllPaginated<Expense>(search, page, 3);
 
-            //IEnumerable<ExpenseListingViewModel> items = new List<ExpenseListingViewModel>();
+            //PaginatedList<ExpenseListingViewModel> items = new PaginatedList<ExpenseListingViewModel>();
 
             //var expVm = Mapper.Map(expPaged, items);
 
